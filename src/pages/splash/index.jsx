@@ -12,7 +12,7 @@ import {
   NumberOfAuctionCreated,
   SuccessfulAuctionParticipated,
   UniqueProfileParticipated,
-} from ".";
+} from "..";
 import { useEffect, useState } from "react";
 import { homePageData } from "statics/homePageStats";
 import { get } from "utils/api";

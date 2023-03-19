@@ -57,7 +57,6 @@ export const MyAuctions = () => {
       <div className="mt-3">
         <Filtering
           hasRadioBtn={true}
-          setStatus={setStatus}
           type={type}
           setType={setType}
           status={status}

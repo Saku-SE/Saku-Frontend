@@ -4,7 +4,7 @@ import Chart from "react-apexcharts";
 import chartData from "statics/chartData";
 import cx from "classnames";
 import Select from "react-select";
-import "styles/chart.css";
+import "./chart.css";
 
 const options = [
   { value: "1400", label: "1400" },

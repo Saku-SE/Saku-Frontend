@@ -1,7 +1,6 @@
 import { Routes, Route, Navigate, BrowserRouter } from "react-router-dom";
 import {
   NotFound,
-  Splash,
   CreateAuction,
   JobInfo,
   Messages,
@@ -14,9 +13,10 @@ import {
   AuctionPage,
   Logout,
   AuctionDetialPage,
-  FullLayoutChat,
   LandingPage,
 } from "pages";
+import {Splash} from 'pages/splash/index';
+import { FullLayoutChat } from "pages/fullLayoutChat/index";
 import {
   NOT_FOUND,
   SPLASH,

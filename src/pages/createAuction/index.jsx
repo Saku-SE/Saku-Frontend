@@ -16,7 +16,7 @@ import Typography from "@mui/material/Typography";
 import { Chip } from "@mui/material";
 import { useEffect } from "react";
 import { get, patch, post } from "utils/api";
-import { GET_CATEGORIES } from "./../constant/apiRoutes";
+import { GET_CATEGORIES } from "../../constant/apiRoutes";
 import { POST_AUCTION } from "constant/apiRoutes";
 import { toast } from "react-toastify";
 import { toUsDate } from "utils/dateConverter";
