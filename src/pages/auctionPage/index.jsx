@@ -7,6 +7,7 @@ import { GET_ALL_AUCTIONS } from "constant/apiRoutes";
 import Pagination from "@mui/material/Pagination";
 import { CircularProgress } from "@mui/material";
 import noAuctionImage from "assets/img/no-auction-image-2.svg";
+import { getAllAuctions, getFilteredAuctions } from "requests/myAuctions";
 
 export const AuctionPage = () => {
   const [auctions, setAuctios] = useState([]);
@@ -22,25 +23,26 @@ export const AuctionPage = () => {
     let currentItem = (page - 1) * dataOnPage;
     return auctions.slice(currentItem, currentItem + dataOnPage);
   };
-  const filterSubmited = () => {
+  const filterSubmited = async () => {
     setPage(1);
     let filteredObj = {};
     if (name !== "") filteredObj["name"] = name;
     if (basePrice !== "") filteredObj["limit"] = basePrice;
-    get(`${GET_ALL_AUCTIONS}`, { params: filteredObj })
-      .then((res) => {
-        setAuctios(res.data);
-        setIsLoading(false);
-      })
-      .catch((e) => setIsLoading(false));
+    const getAllAuctionsRes = await getFilteredAuctions(`${GET_ALL_AUCTIONS}`,{params: filteredObj});
+    if(getAllAuctionsRes && getAllAuctionsRes.status === 200){
+      setAuctios(getAllAuctionsRes.data)
+    }
+    setIsLoading(false);
   };
   useEffect(() => {
-    get(GET_ALL_AUCTIONS)
-      .then((res) => {
-        setAuctios(res.data);
-        setIsLoading(false);
-      })
-      .catch((e) => setIsLoading(false));
+    async function fetchData(){
+      const getAllAuctionsRes = await getAllAuctions({GET_ALL_AUCTIONS});
+      if(getAllAuctionsRes && getAllAuctionsRes.status === 200){
+        setAuctios(getAllAuctionsRes.data);
+      }
+      setIsLoading(false);
+    }
+    fetchData();
   }, []);
   return (
     <div>

@@ -13,6 +13,7 @@ import { get, post } from "utils/api";
 import { toast } from "react-toastify";
 import noComments from "assets/img/comment.svg";
 import { CircularProgress } from "@mui/material";
+import {AddComment, GetComments, ReplyComment} from '../../requests/commentBox';
 
 export const CommentBox = ({ token }) => {
   const [comments, setComments] = useState([]);
@@ -36,9 +37,6 @@ export const CommentBox = ({ token }) => {
     setReply(index);
   };
 
-  const scrollToBottom = () => {
-    // endOfMsg.current.scrollIntoView({ behavior: "smooth", block: "start" });
-  };
 
   const toggleDirection = (e) => {
     if (e.target.value && e.target.value[0].match(/[a-z]/i))
@@ -46,7 +44,7 @@ export const CommentBox = ({ token }) => {
     else e.target.style.direction = "rtl";
   };
 
-  const addComment = () => {
+  const addComment =async () => {
     if (reply) {
       console.log(reply);
       replyComment(reply, commentTxt);
@@ -69,21 +67,23 @@ export const CommentBox = ({ token }) => {
       replies: [],
     };
     setIsLoading(true);
-    post(`/comment/${token}`, addedComment)
-      .then((res) => {
-        toast.success("عملیات با موفیت انجام شد");
-        getComments();
-      })
-      .catch(() => toast.error("عملیات با موفیت انجام نشد"));
+    const addCommentRes = await AddComment(`/comment/${token}`, addedComment);
+    if(addCommentRes && addCommentRes.status===200){
+      toast.success("عملیات با موفیت انجام شد");
+      getComments();
+    }else{
+      toast.error("عملیات با موفیت انجام نشد");
+    }
     let commentsTmp = [...comments, addedComment];
     setComments(commentsTmp);
     setCommentTxt("");
   };
-  const getComments = () => {
-    get(`/comment/${token}`).then((res) => {
-      setComments(res.data);
+  const getComments = async () => {
+    const getCommentsRes = await GetComments(`/comment/${token}`);
+    if(getCommentsRes && getCommentsRes.status === 200){
+      setComments(getCommentsRes.data);
       setIsLoading(false);
-    });
+    }
   };
   useEffect(() => {
     getComments();
@@ -104,7 +104,7 @@ export const CommentBox = ({ token }) => {
     commentsTmp[pickedCommentIdx] = comment;
     setComments(commentsTmp);
   };
-  const replyComment = (index, content) => {
+  const replyComment = async (index, content) => {
     let commentsTmp = [...comments];
     const addedComment = {
       senderName: "Dutch User",
@@ -123,12 +123,13 @@ export const CommentBox = ({ token }) => {
       commentsTmp[index[0]] = foundComment;
       setComments(commentsTmp);
       let id = comments[index[0]].replies[index[1]].id;
-      post(`/comment/reply/${id}`, addedComment)
-        .then((res) => {
-          toast.success("عملیات با موفیت انجام شد");
-          getComments();
-        })
-        .catch(() => toast.error("عملیات با موفیت انجام نشد"));
+      const replyCommentRes = await ReplyComment(`/comment/reply/${id}`, addedComment);
+      if(replyCommentRes && replyCommentRes.status === 200){
+        toast.success("عملیات با موفیت انجام شد");
+        getComments();
+      }else{
+        toast.error("عملیات با موفیت انجام نشد")
+      }
     } else {
       let comment = { ...commentsTmp[index[0]] };
       let replies = [...comment.replies, addedComment];
@@ -136,12 +137,13 @@ export const CommentBox = ({ token }) => {
       commentsTmp[index[0]] = comment;
       setComments(commentsTmp);
       let id = comments[index[0]].id;
-      post(`/comment/reply/${id}`, addedComment)
-        .then((res) => {
-          toast.success("عملیات با موفیت انجام شد");
-          getComments();
-        })
-        .catch(() => toast.error("عملیات با موفیت انجام نشد"));
+      const replyCommentRes = await ReplyComment(`/comment/reply/${id}`, addedComment);
+      if(replyCommentRes && replyCommentRes.status === 200){
+        toast.success("عملیات با موفیت انجام شد");
+        getComments();
+      }else{
+        toast.error("عملیات با موفیت انجام نشد")
+      }
     }
   };
   return (

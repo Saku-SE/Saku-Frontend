@@ -16,6 +16,7 @@ import { toast } from "react-toastify";
 import submitPrice from "assets/img/submit-price.png";
 import { post } from "utils/api";
 import { POST_BID } from "constant/apiRoutes";
+import { SubmitPrice } from "requests/priceCard";
 
 const style = {
   position: "absolute",
@@ -92,7 +93,7 @@ export const PriceCard = ({
   const [valuePriceModal, setValuePriceModal] = React.useState("");
   const [onInitializedInput, setOnInitializedInput] = React.useState(true);
   const [confirmPriceModal, setConfirmPriceModal] = React.useState(false);
-  const onSubmitPrice = () => {
+  const onSubmitPrice = async () => {
     // do the api things and send the price to server
     if (isOnline) {
       submitOnlinePrice({ price: valuePriceModal });
@@ -100,22 +101,21 @@ export const PriceCard = ({
       setEnterPriceModal(false);
       setValuePriceModal(0);
     } else {
-      post(`${POST_BID}/${token}`, {
+      const submitPriceRes = await SubmitPrice(`${POST_BID}/${token}`, {
         price: valuePriceModal,
         time: new Date().toISOString(),
         user: localStorage.getItem("userId"),
         auction: 0,
       })
-        .then(() => {
-          toast.success("ثبت قیمت با موفقیت انجام شد");
-          setValuePriceModal(0);
-          setEnterPriceModal(false);
-          setConfirmPriceModal(false);
-        })
-        .catch((e) => {
-          console.log(e.response.data);
+      if(submitPriceRes && submitPriceRes.status === 200){
+        toast.success("ثبت قیمت با موفقیت انجام شد");
+        setValuePriceModal(0);
+        setEnterPriceModal(false);
+        setConfirmPriceModal(false);
+      }else{
+        console.log(submitPriceRes.response.data);
           toast.error("قیمت‌های بهتر برای این مزایده وجود دارد");
-        });
+      }
     }
   };
   return (

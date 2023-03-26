@@ -17,6 +17,7 @@ import { useEffect, useState } from "react";
 import { homePageData } from "statics/homePageStats";
 import { get } from "utils/api";
 import { CircularProgress } from "@mui/material";
+import { getHomeData } from "requests/splash";
 
 const chartHandler = (name, listObj) => {
   return [
@@ -52,14 +53,19 @@ export const Splash = () => {
   const [data, setData] = useState({});
   const [isLoading, setIsLoading] = useState(true);
 
+  async function fetchData(){
+    const getHomeDataRes = await getHomeData("/homepage/2022");
+    if(getHomeDataRes && getHomeDataRes.status === 200){
+      setData(getHomeDataRes.data.data);
+      setIsLoading(false);
+    }else{
+      setIsLoading(false);
+    }
+  }
+
   useEffect(() => {
     setData(homePageData);
-    get("/homepage/2022")
-      .then((res) => {
-        setData(res.data.data);
-        setIsLoading(false);
-      })
-      .catch((e) => setIsLoading(false));
+    fetchData();
   }, []);
 
   return isLoading ? (

@@ -6,6 +6,7 @@ import { defineUnit } from "utils/formatPrice";
 import { get } from "utils/api";
 import { GET_MY_BID } from "constant/apiRoutes";
 import { Token } from "@mui/icons-material";
+import { getEnteredPrices } from "requests/enteredPrices";
 
 const chipConstantClass =
   "rounded-2xl  p-1 pr-2 pl-2 text-xs flex justify-center w-28";
@@ -39,9 +40,13 @@ const definePriceColor = (num) => {
 export const EnteredPrices = ({ token }) => {
   const [priceList, setPriceList] = useState([]);
   useEffect(() => {
-    get(`${GET_MY_BID}/${token}`).then((res) => {
-      setPriceList(res.data);
-    });
+    async function fetchData() {
+      const getEnteredPricesRes = await getEnteredPrices(`${GET_MY_BID}/${token}`)
+      if(getEnteredPricesRes && getEnteredPricesRes.status === 200){
+        setPriceList(getEnteredPricesRes.data);
+      }
+    }
+    fetchData(); 
   }, [token]);
   return (
     <div className={cardClass}>

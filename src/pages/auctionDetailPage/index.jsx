@@ -14,6 +14,7 @@ import { useEffect } from "react";
 import { get } from "utils/api";
 import { GET_ALL_AUCTIONS } from "constant/apiRoutes";
 import useWebSocket from "react-use-websocket";
+import { getAllAuctions, getBidHistory } from "requests/auctionDetail";
 
 
 
@@ -34,23 +35,25 @@ export const AuctionDetialPage = () => {
 
   const { sendJsonMessage, lastJsonMessage } = useWebSocket(socketUrl);
 
-  useEffect(() => {
-    setIsLoading(true);
-    get(`/bid/${token}`)
-      .then((res) => {
-        setBidHistory(res.data.reverse());
-        setIsLoading(false);
-      })
-      .catch(() => {
-        setIsLoading(false);
-      });
-    get(`${GET_ALL_AUCTIONS}/${token}`).then((res) => {
-      setAuctionData(res.data);
-      setIsOnline(res.data.is_online);
-      if (res.data.user.id == localStorage.getItem("userId")) {
+  const fetchData = async()=>{
+    const getBidHistoryRes = await getBidHistory(`/bid/${token}`);
+    if(getBidHistoryRes && getBidHistoryRes.status === 200){
+      setBidHistory(getBidHistoryRes.data.reverse());
+    }
+    setIsLoading(false)
+    const getAllAuctionsRes = await getAllAuctions(`${GET_ALL_AUCTIONS}/${token}`);
+    if(getAllAuctionsRes && getAllAuctionsRes.status === 200){
+      setAuctionData(getAllAuctionsRes.data);
+      setIsOnline(getAllAuctionsRes.data.is_online);
+      if (getAllAuctionsRes.data.user.id == localStorage.getItem("userId")) {
         setIsOwner(true);
       }
-    });
+    }
+  }
+
+  useEffect(() => {
+    setIsLoading(true);
+    fetchData();
     if (lastJsonMessage !== null) {
       console.log(lastJsonMessage);
       setBidHistory([
