@@ -17,6 +17,7 @@ import cx from "classnames";
 import { useParams } from "react-router-dom";
 import "assets/css/style.css";
 import { host } from "utils/config";
+import { getMessages, getUsers } from "requests/chat";
 
 export const Messages = () => {
   const endOfMsg = useRef(null);
@@ -99,13 +100,15 @@ export const Messages = () => {
       }
     }
   };
-  const getMsgList = (userName) => {
-    get(`${GET_MSG_LIST}${userName}/`).then((res) =>
-      setMessageHistory(res.data.reverse())
-    );
+  const getMsgList = async(userName) => {
+    const getMessagesRes = await getMessages(`${GET_MSG_LIST}${userName}/`);
+    if(getMessagesRes && getMessagesRes.status === 200)
+      setMessageHistory(getMessagesRes.data.reverse())
   };
-  const getUserList = () => {
-    get(GET_USER_LIST).then((res) => setUserList(res.data));
+  const getUserList = async() => {
+    const getUsersRes = await getUsers(GET_USER_LIST);
+    if(getUsersRes && getUsersRes.status === 200)
+    setUserList(getUsersRes.data)
   };
   useEffect(() => {
     if (lastJsonMessage !== null) {

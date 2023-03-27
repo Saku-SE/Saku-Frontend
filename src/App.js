@@ -2,7 +2,7 @@ import React from "react";
 
 import { Navigation } from "navigation";
 import "react-pro-sidebar/dist/css/styles.css";
-import "./styles/layout.scss";
+import "./App.scss";
 import "react-toastify/dist/ReactToastify.css";
 import { ToastContainer } from "react-toastify";
 function App() {

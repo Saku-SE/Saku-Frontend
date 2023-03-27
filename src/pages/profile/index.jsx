@@ -25,6 +25,7 @@ import { PRIFILE, DEL_IMAGE } from "constant/apiRoutes";
 import { provinceList } from "constant/iranProvince";
 import { cityList } from "constant/iranCities";
 import { toast } from "react-toastify";
+import { addImg, deleteImg, getProfileInfo } from "requests/navbar";
 
 export const Profile = ({inTestEnvierment = false}) => {
   const fileRef = useRef(null);
@@ -63,22 +64,21 @@ export const Profile = ({inTestEnvierment = false}) => {
     }
     return "rtl";
   };
-  const handleDelete = () => {
+  const handleDelete = async () => {
     setIsLoading(true);
-    post(DEL_IMAGE)
-      .then(() => {
-        toast.success("تصویر با موفقیت حذف شد.");
-        setIsLoading(false);
-        userData.profile_image = "";
-        setUserData(userData);
-        setfackUrl("");
-      })
-      .catch(() => {
-        toast.error("خطا رخ داده است.");
-        setIsLoading(false);
-      });
+    const reqDelete = await deleteImg(DEL_IMAGE);
+    if(reqDelete && reqDelete.status === 200){
+      toast.success("تصویر با موفقیت حذف شد.");
+      setIsLoading(false);
+      userData.profile_image = "";
+      setUserData(userData);
+      setfackUrl("");
+    }else{
+      toast.error("خطا رخ داده است.");
+      setIsLoading(false);
+    }
   };
-  const updateUserDara = (e) => {
+  const updateUserDara = async (e) => {
     if (userData.national_id === "0") {
       delete userData.national_id;
     }
@@ -90,16 +90,24 @@ export const Profile = ({inTestEnvierment = false}) => {
     if (!isUploadImg) delete x.profile_image;
 
     setIsLoading(true);
-    put(PRIFILE, isUploadImg ? form_data : x)
-      .then(() => {
-        toast.success("عملیات با موفقیت انجام شد");
-        setIsUploadImg(false);
-      })
-      .catch((e) => toast.error("مشکلی در تکمیل اطلاعات وجود دارد."))
-      .finally(() => setIsLoading(false));
+    const addImgRes = await addImg(PRIFILE, isUploadImg ? form_data : x);
+    if(addImgRes && addImgRes.status === 200){
+      toast.success("عملیات با موفقیت انجام شد");
+      setIsUploadImg(false);
+    }else{
+      setIsLoading(false)
+    }
   };
   useEffect(() => {
-    if (!inTestEnvierment) get(PRIFILE).then((res) => setUserData(res.data));
+    async function fetchData(){
+      const getProfileInfoRes = await getProfileInfo(PRIFILE);
+      if(getProfileInfoRes && getProfileInfoRes.status === 200){
+        setUserData(getProfileInfoRes.data)
+      }
+    }
+    if (!inTestEnvierment){
+      fetchData();
+    }
   }, [inTestEnvierment]);
   return isLoading ? (
     <div className="w-full h-full ">

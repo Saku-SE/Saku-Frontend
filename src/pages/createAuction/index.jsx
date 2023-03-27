@@ -16,10 +16,11 @@ import Typography from "@mui/material/Typography";
 import { Chip } from "@mui/material";
 import { useEffect } from "react";
 import { get, patch, post } from "utils/api";
-import { GET_CATEGORIES } from "./../constant/apiRoutes";
+import { GET_CATEGORIES } from "../../constant/apiRoutes";
 import { POST_AUCTION } from "constant/apiRoutes";
 import { toast } from "react-toastify";
 import { toUsDate } from "utils/dateConverter";
+import { addAuction, getCategories, updateAuction } from "requests/createAuction";
 
 export const CreateAuction = ({ inTestEnvierment = false }) => {
   const [auctionType, setAuctionType] = useState("");
@@ -41,7 +42,7 @@ export const CreateAuction = ({ inTestEnvierment = false }) => {
   const handleOpenTwo = () => setOpenTwo(true);
   const handleCloseTwo = () => setOpenTwo(false);
   const fileRef = useRef();
-  const handleSubmit = () => {
+  const handleSubmit = async() => {
     // let form_data = new FormData();
     // setAuctionValue({ ...auctionValue, user: localStorage.getItem("userId") });
     // for (var key in auctionValue) {
@@ -55,29 +56,30 @@ export const CreateAuction = ({ inTestEnvierment = false }) => {
     //   console.log(pair[0] + ", " + pair[1]);
     // }
     setIsLoading(true);
-    post(POST_AUCTION, {
+    const addAuctionRes = await addAuction(POST_AUCTION, {
       ...auctionValue,
       user: localStorage.getItem("userId"),
-    })
-      .then((res) => {
-        toast.success("با موفقیت انجام شد");
-        setIsLoading(false);
-        setIsUploadImg(false);
-        Array.from(document.querySelectorAll("input")).forEach(
-          (input) => (input.value = "")
-        );
-        setAuctionValue({});
-        setAuctionType("");
-        setCategory("");
-        setFinishDate(null);
-        setStartDate(null);
-        setDescription("");
-        setTags([]);
-        let form_data = new FormData();
-        form_data.append("auction_image", img);
-        patch(`${POST_AUCTION}/${res.data.token}`, form_data);
-      })
-      .catch(() => setIsLoading(false));
+    });
+    if(addAuctionRes && addAuctionRes.status === 200){
+      toast.success("با موفقیت انجام شد");
+      setIsLoading(false);
+      setIsUploadImg(false);
+      Array.from(document.querySelectorAll("input")).forEach(
+        (input) => (input.value = "")
+      );
+      setAuctionValue({});
+      setAuctionType("");
+      setCategory("");
+      setFinishDate(null);
+      setStartDate(null);
+      setDescription("");
+      setTags([]);
+      let form_data = new FormData();
+      form_data.append("auction_image", img);
+      await updateAuction(`${POST_AUCTION}/${addAuctionRes.data.token}`, form_data)
+    }else{
+      setIsLoading(false);
+    }
   };
   const uploadFile = (event) => {
     setIsUploadImg(true);
@@ -90,8 +92,13 @@ export const CreateAuction = ({ inTestEnvierment = false }) => {
   };
 
   useEffect(() => {
-    if (!inTestEnvierment)
-      get(GET_CATEGORIES).then((res) => setCategories(res.data));
+    async function fetchData(){
+      const getCategoriesRes = await getCategories(GET_CATEGORIES);
+      if(getCategoriesRes && getCategoriesRes.status === 200){
+        setCategories(getCategoriesRes.data)
+      }
+    }
+    if (!inTestEnvierment) fetchData()
   }, [inTestEnvierment]);
   const style = {
     position: "absolute",

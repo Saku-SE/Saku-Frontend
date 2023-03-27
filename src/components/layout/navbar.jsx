@@ -16,18 +16,23 @@ import {
 } from "constant/routes";
 import { get } from "utils/api";
 import { PRIFILE } from "constant/apiRoutes";
+import { getProfileInfo } from "requests/navbar";
 const NavBar = ({ handleToggleSidebar }) => {
   const navigate = useNavigate();
   let hoverColored = "hover:text-orange-500";
   const [userImage, setUserImage] = useState();
   const [userName, setName] = useState("");
   useEffect(() => {
-    get(PRIFILE).then((res) => {
-      setUserImage(res.data.profile_image);
-      setName(res.data.name);
-      localStorage.setItem("userId", res.data.user);
-      localStorage.setItem("profileImg", res.data.profile_image);
-    });
+    async function fetchData(){
+      const getProfileInfoRes = await getProfileInfo(PROFILE);
+      if(getProfileInfoRes && getProfileInfoRes.status === 200){
+        setUserImage(getProfileInfoRes.data.profile_image);
+        setName(getProfileInfoRes.data.name);
+        localStorage.setItem("userId", getProfileInfoRes.data.user);
+        localStorage.setItem("profileImg", getProfileInfoRes.data.profile_image);
+      }
+    }
+    fetchData()
   }, []);
   return (
     <div className="p-2">

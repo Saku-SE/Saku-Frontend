@@ -8,12 +8,13 @@ import { get } from "utils/api";
 import { useEffect } from "react";
 import { GET_ALL_AUCTIONS } from "constant/apiRoutes";
 import { CircularProgress } from "@mui/material";
+import { getFilteredAuctions, getAllAuctions } from "requests/myAuctions";
 
 export const MyAuctions = () => {
   const [type, setType] = React.useState("");
   const [status, setStatus] = React.useState("");
   const [page, setPage] = useState(1);
-  const [auctions, setAuctios] = useState([]);
+  const [auctions, setAuctions] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const dataOnPage = 6;
   const [name, setName] = useState("");
@@ -26,7 +27,7 @@ export const MyAuctions = () => {
     let currentItem = (page - 1) * dataOnPage;
     return auctions.slice(currentItem, currentItem + dataOnPage);
   };
-  const filterSubmited = () => {
+  const filterSubmited = async () => {
     setPage(1);
     let username = localStorage.getItem("username");
     let filteredObj = {};
@@ -35,21 +36,19 @@ export const MyAuctions = () => {
     if (type !== "") filteredObj["mode"] = type;
     if (basePrice !== "") filteredObj["limit"] = basePrice;
 
-    get(`${GET_ALL_AUCTIONS}?username=${username}`, { params: filteredObj })
-      .then((res) => {
-        setAuctios(res.data);
-        setIsLoading(false);
-      })
-      .catch((e) => setIsLoading(false));
+    const getAllAuctionsRes = await getFilteredAuctions(`${GET_ALL_AUCTIONS}?username=${username}`,{params: filteredObj});
+    if(getAllAuctionsRes && getAllAuctionsRes.status === 200){
+      setAuctions(getAllAuctionsRes.data)
+    }
+    setIsLoading(false);
   };
-  useEffect(() => {
+  useEffect(async () => {
     let username = localStorage.getItem("username");
-    get(`${GET_ALL_AUCTIONS}?username=${username}`)
-      .then((res) => {
-        setAuctios(res.data);
-        setIsLoading(false);
-      })
-      .catch((e) => setIsLoading(false));
+    const getAllAuctionsRes = await getAllAuctions(`${GET_ALL_AUCTIONS}?username=${username}`);
+    if(getAllAuctionsRes && getAllAuctionsRes.status === 200){
+      setAuctions(getAllAuctionsRes.data);
+    }
+    setIsLoading(false);
   }, []);
 
   return (
@@ -57,7 +56,6 @@ export const MyAuctions = () => {
       <div className="mt-3">
         <Filtering
           hasRadioBtn={true}
-          setStatus={setStatus}
           type={type}
           setType={setType}
           status={status}

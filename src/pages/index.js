@@ -1,4 +1,4 @@
-export { Splash } from "./splash";
+export { Splash } from "./splash/index";
 export { NotFound } from "./notFound";
 export { CreateAuction } from "./createAuction";
 export { JobInfo } from "./jobInfo";
@@ -29,5 +29,5 @@ export {
 export { AuctionPage } from "./auctionPage";
 export { Logout } from "./logout";
 export { AuctionDetialPage } from "./auctionDetailPage";
-export { FullLayoutChat } from "./fullLayouChat";
+export { FullLayoutChat } from "./fullLayoutChat";
 export { LandingPage } from "./landing";
