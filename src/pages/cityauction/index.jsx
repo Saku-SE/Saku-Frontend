@@ -13,7 +13,7 @@ import KeyboardBackspaceIcon from "@mui/icons-material/KeyboardBackspace";
 import { useEffect } from "react";
 import { host } from "utils/config";
 import { useNavigate } from "react-router-dom";
-import first from "./1.svg";
+import first from "assets/img/1.svg";
 // import "./2.png";
 //مزایده مناقصه بر اساس شهر ها
 
@@ -31,6 +31,7 @@ export const CityAuction = (props) => {
     const navigate = useNavigate();
     const [auctionCity, setAuctionCity] = useState([]);
     const [city, setCity] = useState("");
+
     useEffect(() => {
         axios
             .get(`${host}auction/city/`, {
@@ -48,9 +49,9 @@ export const CityAuction = (props) => {
     return (
         <div>
             <Grid container>
-                {auctionCity.map((city) => {
+                {auctionCity.map((city, i) => {
                     return (
-                        <Grid item>
+                        <Grid item key={i}>
                             <Card sx={{ minWidth: 265 }} className='card1'>
                                 <CardContent>
                                     <Typography
@@ -68,7 +69,7 @@ export const CityAuction = (props) => {
                                         مزایده مناقصه {city.name}{" "}
                                     </Typography>
                                     <Typography variant='body2'>
-                                        1234 آگهی
+                                    تعداد آگهی ها {city.num_auctions}
                                     </Typography>
                                 </CardContent>
                                 <CardActions>

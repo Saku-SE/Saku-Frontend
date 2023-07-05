@@ -10,12 +10,11 @@ import "./index.css";
 import { useNavigate } from "react-router-dom";
 import { getCategories } from "utils/api/requests/createAuction";
 import { GET_CATEGORIES } from "utils/constant/apiRoutes";
+import eStste from "assets/img/777.svg";
+import slideph from "assets/img/111.png";
+import slidephh from "assets/img/333.png";
 
-const slideImages = [
-    "https://dummyimage.com/600x400/b1e6b2/1c2ae8.png",
-    "https://dummyimage.com/700x300.png",
-    "https://dummyimage.com/600x400/e8b2e8/1c2ae8.png",
-];
+const slideImages = [slideph, slidephh];
 
 const properties = {
     duration: 5000,
@@ -27,6 +26,13 @@ const properties = {
 export const Category = () => {
     const [categories, setCategories] = useState([]);
     const navigate = useNavigate();
+    // const categoryData=[
+    //     {
+    //         id: 1,
+    //         name: "",
+    //         Image: ""
+    //     }
+    // ]
     useEffect(() => {
         async function fetchData() {
             const getCategoriesRes = await getCategories(GET_CATEGORIES);
@@ -38,62 +44,59 @@ export const Category = () => {
     }, []);
     return (
         <div>
-            <div className='text'>مزایده / مناقصه بر اساس دسته بندی </div>
-            <Slide {...properties} style={{ color: "red" }}>
+            {/* <div className='text'>مزایده / مناقصه بر اساس دسته بندی </div> */}{" "}
+            <Slide
+                className='div-style'
+                {...properties}
+                style={{ color: "red" }}
+            >
                 <div className='each-slide'>
-                    <div style={{ backgroundImage: `url(${slideImages[0]})` }}>
-                        <span>Slide 1</span>
+                    <div
+                        style={{
+                            backgroundImage: `url(${slideImages[0]})`,
+                        }}
+                    >
+                        <div className='text'>
+                            مزایده / مناقصه بر اساس دسته بندی{" "}
+                        </div>
                     </div>
                 </div>
                 <div className='each-slide'>
-                    <div style={{ backgroundImage: `url(${slideImages[1]})` }}>
-                        <span>Slide 2</span>
-                    </div>
-                </div>
-                <div className='each-slide'>
-                    <div style={{ backgroundImage: `url(${slideImages[2]})` }}>
-                        <span>Slide 3</span>
+                    <div
+                        style={{
+                            backgroundImage: `url(${slideImages[1]})`,
+                        }}
+                    >
+                        {/* <span>Slide 2</span> */}
                     </div>
                 </div>
             </Slide>
-
-            <Grid container>
-                {categories.map((cat) => {
+            <div className='category-div'>
+                {categories.map((cat, i) => {
                     return (
-                        <Grid item>
-                            <Card sx={{ minWidth: 265 }} className='card1'>
-                                <CardContent></CardContent>
-                                <CardActions>
-                                    <Button
-                                        size='small'
-                                        style={{
-                                            color: "white",
-                                            marginRight: "98px",
-                                        }}
-                                        onClick={() => {
-                                            navigate("/auction-page", {
-                                                state: { catId: cat.name },
-                                            });
-                                        }}
-                                    >
-                                        <Typography
-                                            variant='h6'
-                                            component='div'
-                                            className='city'
-                                            style={{
-                                                marginLeft: "100px",
-                                                marginBottom: "40px",
-                                            }}
-                                        >
-                                            دسته بندی {cat.name}
-                                        </Typography>{" "}
-                                    </Button>
-                                </CardActions>
-                            </Card>
-                        </Grid>
+                        <div key={i}>
+                            <button
+                                style={{ width: "565px " }}
+                                className='cat-button'
+                                onClick={() => {
+                                    navigate("/auction-page", {
+                                        state: { catId: cat.name },
+                                    });
+                                }}
+                            >
+                                <img
+                                    src={eStste}
+                                    className='cat-image'
+                                    alt='cat'
+                                />
+                                <span className='cat-name'>
+                                    دسته بندی {cat.name}
+                                </span>
+                            </button>
+                        </div>
                     );
                 })}
-            </Grid>
+            </div>
         </div>
     );
 };
