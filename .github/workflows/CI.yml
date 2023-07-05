@@ -47,6 +47,6 @@ jobs:
 
     - name: Run Tests
       run: |
-        docker run -e CI=true ghcr.io/saku-se/saku-frontend:testing /bin/sh -c "npm test -- --coverage"
+        docker run -e CI=true ghcr.io/saku-se/saku-frontend:testing /bin/sh -c "npm run test"
       # run: |
       #   docker-compose -f docker-compose.test.yml run client
